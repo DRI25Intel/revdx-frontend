@@ -37,13 +37,25 @@ export default function Home() {
         context: formData.context
       }
 
-      const response = await fetch('https://revdx.vercel.app/api/diagnostic', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(diagnosticData)
-      })
+     const response = await fetch('https://revdx.vercel.app/api/diagnostic', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    userQuery: formData.context,
+    metrics: {
+      companyName: formData.companyName,
+      industry: formData.industry,
+      currentARR: parseFloat(formData.currentARR),
+      targetARR: parseFloat(formData.targetARR),
+      salesTeamSize: parseInt(formData.salesTeamSize),
+      averageDealSize: parseFloat(formData.averageDealSize),
+      salesCycleLength: parseInt(formData.salesCycleLength),
+      winRate: parseFloat(formData.winRate),
+    }
+  })
+})
 
       if (!response.ok) {
         throw new Error('Diagnostic failed')
