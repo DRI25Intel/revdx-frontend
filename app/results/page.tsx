@@ -7,10 +7,21 @@ import Link from 'next/link'
 interface DiagnosticResult {
   sessionId: string
   companyName: string
-  analysis: string
-  primaryConstraint: string
-  realConstraint: string
-  actionableInsights: string[]
+  
+  // New SalesGSS RevDx structure
+  diagnosis: string
+  satCheck: string
+  operatorPlan: string[]
+  enterpriseImpact: string
+  disciplineQuestion: string
+  
+  // Backwards compatibility fields
+  analysis?: string
+  primaryConstraint?: string
+  realConstraint?: string
+  actionableInsights?: string[]
+  
+  // Metadata
   confidenceScore: number
   pillarsFired: number[]
   violationsDetected: string[]
@@ -67,6 +78,7 @@ export default function Results() {
           <p className="text-slate-400">Diagnostic completed on {new Date(result.createdAt).toLocaleDateString()}</p>
         </div>
 
+        {/* Confidence Score & Pillars */}
         <div className="mb-8 p-6 bg-slate-800/50 backdrop-blur rounded-lg border border-slate-700">
           <div className="flex items-center justify-between">
             <div>
@@ -80,16 +92,19 @@ export default function Results() {
           </div>
         </div>
 
+        {/* 1. DIAGNOSIS */}
         <div className="mb-8 p-6 bg-red-500/10 border border-red-500/50 rounded-lg">
-          <h3 className="text-lg font-semibold text-red-400 mb-2">Primary Constraint Detected</h3>
-          <p className="text-xl text-white font-medium">{result.primaryConstraint}</p>
+          <h3 className="text-lg font-semibold text-red-400 mb-3">Diagnosis</h3>
+          <p className="text-lg text-white leading-relaxed">{result.diagnosis}</p>
         </div>
 
+        {/* 2. SAT CHECK */}
         <div className="mb-8 p-6 bg-orange-500/10 border border-orange-500/50 rounded-lg">
-          <h3 className="text-lg font-semibold text-orange-400 mb-2">Root Cause</h3>
-          <p className="text-xl text-white">{result.realConstraint}</p>
+          <h3 className="text-lg font-semibold text-orange-400 mb-3">SAT Check</h3>
+          <p className="text-lg text-white italic">{result.satCheck}</p>
         </div>
 
+        {/* Operating Non-Negotiables Violations (if any) */}
         {result.violationsDetected && result.violationsDetected.length > 0 && (
           <div className="mb-8 p-6 bg-yellow-500/10 border border-yellow-500/50 rounded-lg">
             <h3 className="text-lg font-semibold text-yellow-400 mb-3">Operating Non-Negotiables Violated</h3>
@@ -104,27 +119,34 @@ export default function Results() {
           </div>
         )}
 
+        {/* 3. 30-DAY OPERATOR PLAN */}
         <div className="mb-8 p-6 bg-blue-500/10 border border-blue-500/50 rounded-lg">
-          <h3 className="text-lg font-semibold text-blue-400 mb-3">Actionable Insights</h3>
-          <ul className="space-y-3">
-            {result.actionableInsights.map((insight, idx) => (
-              <li key={idx} className="text-white flex items-start">
-                <span className="text-blue-400 mr-2 font-bold">{idx + 1}.</span>
-                <span>{insight}</span>
+          <h3 className="text-lg font-semibold text-blue-400 mb-4">30-Day Operator Plan</h3>
+          <ul className="space-y-4">
+            {result.operatorPlan.map((action, idx) => (
+              <li key={idx} className="text-white">
+                <div className="flex items-start">
+                  <span className="text-blue-400 mr-3 font-bold min-w-[24px]">{idx + 1}.</span>
+                  <span className="leading-relaxed">{action}</span>
+                </div>
               </li>
             ))}
           </ul>
         </div>
 
-        <div className="mb-8 p-6 bg-slate-800/50 backdrop-blur rounded-lg border border-slate-700">
-          <h3 className="text-lg font-semibold text-white mb-4">Complete Analysis</h3>
-          <div className="prose prose-invert max-w-none">
-            <div className="text-slate-300 whitespace-pre-wrap leading-relaxed">
-              {result.analysis}
-            </div>
-          </div>
+        {/* 4. ENTERPRISE IMPACT */}
+        <div className="mb-8 p-6 bg-purple-500/10 border border-purple-500/50 rounded-lg">
+          <h3 className="text-lg font-semibold text-purple-400 mb-3">Enterprise Impact</h3>
+          <p className="text-lg text-white leading-relaxed">{result.enterpriseImpact}</p>
         </div>
 
+        {/* 5. DISCIPLINE QUESTION */}
+        <div className="mb-8 p-6 bg-slate-800/50 backdrop-blur rounded-lg border border-slate-700">
+          <h3 className="text-lg font-semibold text-slate-300 mb-3">Discipline Question</h3>
+          <p className="text-xl text-white font-medium italic leading-relaxed">{result.disciplineQuestion}</p>
+        </div>
+
+        {/* Action Buttons */}
         <div className="flex gap-4 justify-center">
           <Link
             href="/"
